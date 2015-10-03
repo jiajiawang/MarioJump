@@ -11,9 +11,14 @@ class MainScene < MG::Scene
     @on_ground = false
     @block_update = 0
     @random = Random.new
+    @game_over = false
 
     on_touch_begin do
+      if @game_over
+        MG::Director.shared.replace(MainScene.new)
+      end
       if @on_ground
+        MG::Audio.play('jump.wav')
         @on_ground = false
         @mario.velocity = [0, 400]
       end
@@ -66,6 +71,11 @@ class MainScene < MG::Scene
   end
 
   def update(delta)
+    if @mario.position.y < 0
+      MG::Audio.play('game_over.wav')
+      stop_update
+      @game_over = true
+    end
     @block_update += delta
     if @block_update >= 1.0
       add_block
