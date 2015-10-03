@@ -33,6 +33,7 @@ class MainScene < MG::Scene
       block.category_mask = GROUND
       block.contact_mask = MARIO
       add block
+      block.move_by([-1500, 0], 5.0) { block.delete_from_parent  }
     end
   end
 
@@ -42,6 +43,7 @@ class MainScene < MG::Scene
     @mario.attach_physics_box
     @mario.category_mask = MARIO
     @mario.contact_mask = GROUND
+    @mario.animate(['mario_1.png', 'mario_2.png', 'mario_3.png'], 0.1, :forever)
     add @mario
   end
 end
