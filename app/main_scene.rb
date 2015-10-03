@@ -1,9 +1,27 @@
 class MainScene < MG::Scene
+  MARIO = 1
+  GROUND = 2
+
   def initialize
     self.gravity = [0, -900]
 
     add_mario
     add_ground
+
+    @on_ground = false
+
+    on_touch_begin do
+      if @on_ground
+        @on_ground = false
+        @mario.velocity = [0, 400]
+      end
+    end
+
+    on_contact_begin do
+      @on_ground = true
+      @mario.velocity = [0, 0]
+      true
+    end
   end
 
   def add_ground
@@ -12,6 +30,8 @@ class MainScene < MG::Scene
       block.attach_physics_box
       block.dynamic = false
       block.position = [200 + (offset-1) * 48, 100]
+      block.category_mask = GROUND
+      block.contact_mask = MARIO
       add block
     end
   end
@@ -20,6 +40,8 @@ class MainScene < MG::Scene
     @mario = MG::Sprite.new('mario_1.png')
     @mario.position = [200, 200]
     @mario.attach_physics_box
+    @mario.category_mask = MARIO
+    @mario.contact_mask = GROUND
     add @mario
   end
 end
