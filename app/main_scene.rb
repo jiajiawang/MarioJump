@@ -9,6 +9,8 @@ class MainScene < MG::Scene
     add_ground
 
     @on_ground = false
+    @block_update = 0
+    @random = Random.new
 
     on_touch_begin do
       if @on_ground
@@ -22,10 +24,12 @@ class MainScene < MG::Scene
       @mario.velocity = [0, 0]
       true
     end
+
+    start_update
   end
 
   def add_ground
-    1.upto(15) do |offset|
+    1.upto(18) do |offset|
       block = MG::Sprite.new('block.png')
       block.attach_physics_box
       block.dynamic = false
@@ -45,5 +49,27 @@ class MainScene < MG::Scene
     @mario.contact_mask = GROUND
     @mario.animate(['mario_1.png', 'mario_2.png', 'mario_3.png'], 0.1, :forever)
     add @mario
+  end
+
+  def add_block
+    number = @random.rand(1..5)
+    1.upto(number) do |offset|
+      block = MG::Sprite.new('block.png')
+      block.attach_physics_box
+      block.dynamic = false
+      block.category_mask = GROUND
+      block.contact_mask = MARIO
+      block.position = [MG::Director.shared.size.width + offset * 48, 100]
+      add block
+      block.move_by([-1500, 0], 5.0) { block.delete_from_parent  }
+    end
+  end
+
+  def update(delta)
+    @block_update += delta
+    if @block_update >= 1.0
+      add_block
+      @block_update = 0
+    end
   end
 end
